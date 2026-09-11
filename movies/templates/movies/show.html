@@ -50,6 +50,13 @@
               href="{% url 'movies.delete_review' id=template_data.movie.id review_id=review.id %}">Delete
             </a>
             {% endif %}
+
+            <!-- report button on other reviews only, not on users own review-->
+             {% if user.is_authenticated and user != review.user %}
+            <a class="btn btn-primary" href="{% url 'movies.report' id=template_data.movie.id review_id=review.id %}">Report
+            </a>
+            {% endif %}
+
           </li>
           {% endfor %}
         </ul>
