@@ -23,8 +23,9 @@ class Review(models.Model):
 class Report(models.Model):
     id = models.AutoField(primary_key=True)
     report = models.CharField(max_length = 255)
-    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)        
     date = models.DateTimeField(auto_now_add = True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return "Review ID: " + str(self.id) + '- Review comment: ' + self.review.comment
+        return "Review ID & Movie: " + str(self.review.id) + ' - ' + self.movie.name + ', Review: ' + self.review.comment
