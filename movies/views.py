@@ -81,6 +81,7 @@ def report(request, id, review_id):
         reports.report = request.POST['comment']
         reports.review = review
         reports.user = request.user
+        reports.movie = review.movie
         reports.save()
         return redirect('movies.show', id=id)
     
