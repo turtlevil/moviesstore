@@ -7,6 +7,16 @@
       <div class="col-md-6 mx-auto mb-3">
         <h2>{{ template_data.movie.name }}</h2>
         <hr />
+        {%if template_data.movie_rating is not None%}
+          <p>
+            <b>Average Rating: </b>
+            {{ template_data.movie_rating|floatformat:1 }}/5
+          </p>
+        {%else%}
+          <p>
+            <b>Average Rating: </b> No ratings yet
+          </p>
+        {%endif%}
         <p><b>Description:</b> {{template_data.movie.description }}</p>
         <p><b>Price:</b> ${{template_data.movie.price }}</p>
         <p class="card-text">
@@ -41,7 +51,9 @@
             <h6 class="card-subtitle mb-2 text-muted">
               {{ review.date }}
             </h6>
+            <p><b>Rating:</b>{{ review.rating }}/5</p>
             <p class="card-text">{{ review.comment }}</p>
+
             {% if user.is_authenticated and user == review.user %}
             <a class="btn btn-primary"
               href="{% url 'movies.edit_review' id=template_data.movie.id review_id=review.id %}">Edit
@@ -60,7 +72,7 @@
           </li>
           {% endfor %}
         </ul>
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and not template_data.user_review%}
         <div class="container mt-4">
           <div class="row justify-content-center">
             <div class="col-12">
@@ -70,9 +82,21 @@
                     </b><br /><br />
                   <form method="POST" action="{% url 'movies.create_review' id=template_data.movie.id %}">
                     {% csrf_token %}
+                    <div class="rating">
+                      <label for ="rating">Rating out of 5:</label>
+                      <select name ="rating" id = "rating" required>
+                        <option value = "" disabled>Choose a rating</option>
+                        <option value = "1">1</option>
+                        <option value = "2">2</option>
+                        <option value = "3">3</option>
+                        <option value = "4">4</option>
+                        <option value = "5">5</option>
+                      </select>
+                      
+                    </div>
                     <p>
                       <label for="comment">Comment:</label>
-                      <textarea name="comment" required
+                      <textarea name="comment"
                       class="form-control"
                       id="comment"></textarea>
                     </p>
