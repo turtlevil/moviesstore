@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Movie, Review, Report
 from django.contrib.auth.decorators import login_required
-
+from django.db.models import Avg
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
@@ -17,24 +17,37 @@ def index(request):
 
 #if the user is auth -> grab the ids of the reviews that they reported and
 #  then filter the reviews list to not show them to that specific user
+#grab the users review for that specific movie
 def show(request, id):
     movie = Movie.objects.get(id=id)
+    movie_rating = Review.objects.filter(movie = movie).aggregate(Avg('rating'))['rating__avg']
     reviews = Review.objects.filter(movie=movie)
+    user_review = None
     if request.user.is_authenticated:
         reported_ids_reviews = Report.objects.filter(user=request.user).values_list('review_id', flat = True)
         reviews = reviews.exclude(id__in = reported_ids_reviews) 
+        user_review = Review.objects.filter(movie = movie, user = request.user).first()
     template_data = {}
     template_data['title'] = movie.name
     template_data['movie'] = movie
+    template_data['movie_rating'] = movie_rating
     template_data['reviews'] = reviews
+    template_data['user_review'] = user_review
+
     return render(request, 'movies/show.html', {'template_data': template_data})
 
+
+#get movie, make sure user doesn't have review for it
+#check there's a rating and there isn't  review already for this user
 @login_required
 def create_review(request, id):
-    if request.method == 'POST' and request.POST['comment'] != '':
+    movie = Movie.objects.get(id=id)
+    review_exists = Review.objects.filter(movie = movie, user = request.user).exists()
+    if request.method == 'POST' and request.POST.get('rating') in ['1', '2', '3', '4', '5'] and not review_exists:
         movie = Movie.objects.get(id=id)
         review = Review()
-        review.comment = request.POST['comment']
+        review.rating = int(request.POST.get('rating'))
+        review.comment = request.POST.get('comment', '')
         review.movie = movie
         review.user = request.user
         review.save()
@@ -51,11 +64,11 @@ def edit_review(request, id, review_id):
         template_data = {}
         template_data['title'] = 'Edit Review'
         template_data['review'] = review
-        return render(request, 'movies/edit_review.html',
-            {'template_data': template_data})
-    elif request.method == 'POST' and request.POST['comment'] != '':
+        return render(request, 'movies/edit_review.html', {'template_data': template_data})
+    elif request.method == 'POST' and request.POST.get('rating') in ['1', '2', '3', '4', '5']:
         review = Review.objects.get(id=review_id)
-        review.comment = request.POST['comment']
+        review.rating = int(request.POST.get('rating'))
+        review.comment = request.POST.get('comment', '')
         review.save()
         return redirect('movies.show', id=id)
     else:
