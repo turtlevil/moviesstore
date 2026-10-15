@@ -4,6 +4,9 @@ from movies.models import Movie
 from .utils import calculate_cart_total
 from .models import Order, Item
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import User
+from django.db.models import Sum
 
 def index(request):
     cart_total = 0
@@ -56,3 +59,13 @@ def purchase(request):
     template_data['order_id'] = order.id
     return render(request, 'cart/purchase.html',
         {'template_data': template_data})
+
+
+@staff_member_required
+def top_buyers(request):
+    buyers = User.objects.annotate(movies_purchased=Sum('order__item__quantity')).filter(movies_purchased__gt=0).order_by('-movies_purchased')
+    template_data = {}
+    template_data['title'] = 'Top Buyers'
+    template_data['buyers'] = buyers
+    template_data['top_buyer'] = buyers.first()
+    return render(request, 'cart/top_buyers.html', {'template_data': template_data})
