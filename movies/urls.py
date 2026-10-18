@@ -8,5 +8,6 @@ urlpatterns = [
     path('<int:id>/review/<int:review_id>/delete/', views.delete_review, name='movies.delete_review'),
     #url for the report. sends id and review_id when url path clicked to report func
     path('<int:id>/review/<int:review_id>/report/', views.report, name='movies.report'),
+    path('top-commenters/', views.top_commenters, name='movies.top_commenters')
 
 ]

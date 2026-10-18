@@ -40,6 +40,7 @@
             <a class="nav-link" href="{% url 'accounts.orders' %}">Orders</a>
             {% if user.is_staff %}
             <a class="nav-link" href="{% url 'cart.top_buyers' %}">Top Buyers</a>
+            <a class="nav-link" href="{% url 'movies.top_commenters' %}">Top Commenters</a>
             {% endif %}
             <a class="nav-link"href="{% url 'accounts.logout' %}">Logout ({{user.username }})</a>
             {% else %}

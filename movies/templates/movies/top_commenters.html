@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-3">
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col mx-auto mb-3">
+                <h2>Top Commenters</h2>
+                <hr />
+                {% if template_data.top_commenters %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Most comments made
+                    </div>
+                    <div class="card-body">
+                        <b>User:</b> {{ template_data.top_commenters.user__username }}<br />
+                        <b>Comments posted:</b> {{ template_data.top_commenters.comments_posted }}
+                    </div>
+                 </div>
+                 <table class="table table-bordered table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th scope="col">Rank</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Comments Posted</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commenter in template_data.commenters %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ commenter.user__username }}</td>
+                            <td>{{ commenter.comments_posted }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                 </table>
+                {% else %}
+                <p>No comments have been posted yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
