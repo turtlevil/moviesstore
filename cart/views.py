@@ -63,9 +63,16 @@ def purchase(request):
 
 @staff_member_required
 def top_buyers(request):
+    list_size = request.GET.get('list-size')
     buyers = User.objects.annotate(movies_purchased=Sum('order__item__quantity')).filter(movies_purchased__gt=0).order_by('-movies_purchased')
+    if list_size:
+        size = int(list_size)
+        buyers = buyers[:size]
+    else:
+        buyers = User.objects.annotate(movies_purchased=Sum('order__item__quantity')).filter(movies_purchased__gt=0).order_by('-movies_purchased')
     template_data = {}
     template_data['title'] = 'Top Buyers'
     template_data['buyers'] = buyers
     template_data['top_buyer'] = buyers.first()
+
     return render(request, 'cart/top_buyers.html', {'template_data': template_data})

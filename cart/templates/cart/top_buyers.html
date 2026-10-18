@@ -6,6 +6,24 @@
             <div class="col mx-auto mb-3">
                 <h2>Top Buyers</h2>
                 <hr />
+                <p class="card-text">
+                    <form method="GET">
+                        <div class="row">
+                            <div class="col-auto">
+                                <div class="input-group col-auto">
+                                    <div class="input-group-text">
+                                        List Size</div>
+                                    <input type="text" class="form-control"
+                                        name="list-size">
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn bg-dark text-white"
+                                    type="submit">Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                </p>
                 {% if template_data.top_buyer %}
                 <div class="card mb-4">
                     <div class="card-header">
