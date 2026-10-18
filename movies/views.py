@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Movie, Review, Report
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
@@ -102,3 +104,18 @@ def report(request, id, review_id):
         template_data = {}
         template_data['review'] = review
         return render(request, 'movies/report.html', {'template_data': template_data})
+
+@staff_member_required
+def top_commenters(request):
+    commenters = (
+        Review.objects.exclude(comment__regex=r'^\s*$')
+        .values('user_id', 'user__username')
+        .annotate(comments_posted=Count('id'))
+        .order_by('-comments_posted', 'user_id')
+    )
+    template_data = {}
+    template_data['title'] = 'Top Commenters'
+    template_data['commenters'] = commenters
+    template_data['top_commenters'] = commenters.first()
+    return render(request, 'movies/top_commenters.html',
+        {'template_data': template_data})
