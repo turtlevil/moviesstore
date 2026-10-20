@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-3">
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col mx-auto mb-3">
+                <h2>Top Movies</h2>
+                <hr />
+                {% if template_data.top_bought %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Most purchased movie
+                    </div>
+                    <div class="card-body">
+                        <b>Movie:</b> {{ template_data.top_bought.name }}<br />
+                        <b>Times Bought:</b> {{ template_data.top_bought.times_bought }}
+                    </div>
+                 </div>
+                {% else %}
+                <p>No movies have been purchased yet</p>
+                {% endif %}
+                {% if template_data.top_reviewed %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Most reviewed movie
+                    </div>
+                    <div class="card-body">
+                        <b>Movie:</b> {{ template_data.top_reviewed.name }}<br />
+                        <b>Times Reviewed:</b> {{ template_data.top_reviewed.times_reviewed }}
+                    </div>
+                 </div>
+                {% else %}
+                <p>No movies have been reviewed yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
