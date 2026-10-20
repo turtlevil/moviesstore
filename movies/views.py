@@ -3,7 +3,7 @@ from .models import Movie, Review, Report
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
 from django.contrib.admin.views.decorators import staff_member_required
-from django.db.models import Count
+from django.db.models import Count, Sum
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
@@ -119,3 +119,18 @@ def top_commenters(request):
     template_data['top_commenters'] = commenters.first()
     return render(request, 'movies/top_commenters.html',
         {'template_data': template_data})
+
+@staff_member_required
+def top_movies(request):
+    top_bought = (
+        Movie.objects.annotate(times_bought=Sum('item__quantity')).filter(times_bought__gt=0).order_by('-times_bought', 'name').first()
+    )
+    top_reviewed = (
+        Movie.objects.annotate(times_reviewed=Count('review')).filter(times_reviewed__gt=0).order_by('-times_reviewed', 'name').first()
+    )
+
+    template_data = {}
+    template_data['title'] = 'Top Movies'
+    template_data['top_bought'] = top_bought
+    template_data['top_reviewed'] = top_reviewed
+    return render(request, 'movies/top_movies.html', {'template_data' : template_data})
